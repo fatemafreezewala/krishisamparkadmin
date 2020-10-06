@@ -1,43 +1,36 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import {
 	ScrollView,
 	StyleSheet,
-	Text,
-	View,
-	Image,
 	ToastAndroid,
+	Modal,
+	Image,
 } from 'react-native'
 import { OutlinedTextField } from '@ubaids/react-native-material-textfield'
 import ImagePicker from 'react-native-image-crop-picker'
 import { Button } from 'react-native-paper'
-import url from '../constant/url'
 import Header from '../components/Header'
+import url from '../constant/url'
 
-const AddCategory = ({ navigation }) => {
-	const [name, setName] = useState('')
-	const [image, setImage] = useState('')
+const EditModal = ({ info, modalVis, setModalVis, handleRefresh }) => {
+	const [name, setName] = useState(info.type_name)
+	const [image, setImage] = useState({})
 	const [loading, setLoading] = useState(false)
 
-	const handleAdd = async () => {
-		if (!name || !image.path) {
-			ToastAndroid.show(
-				'Please enter name and select image',
-				ToastAndroid.SHORT,
-			)
-			return
-		}
+	const handleEdit = async () => {
 		setLoading(true)
-		const filename = image.path.match(/.*\/(.*)$/)[1]
 		const formData = new FormData()
-		formData.append('subcat_name', name)
-		formData.append('category_id', '1')
-		formData.append('subcat_image', {
-			uri: image.path,
-			type: image.mime,
-			name: filename,
-		})
+		formData.append('type_name', name)
+		formData.append('type_id', info.type_id)
+		if (image.path) {
+			formData.append('type_image', {
+				uri: image.path,
+				type: image.mime,
+				name: image.path.match(/.*\/(.*)$/)[1],
+			})
+		}
 		try {
-			const res = await fetch(`${url}insertDataSubCategory`, {
+			const res = await fetch(`${url}updateSubCategoryType`, {
 				method: 'POST',
 				body: formData,
 				headers: {
@@ -46,53 +39,61 @@ const AddCategory = ({ navigation }) => {
 				},
 			})
 			const json = await res.json()
-			console.log(json)
+
 			setLoading(false)
 			if (json.status == '200') {
-				ToastAndroid.show('Category added successfully', ToastAndroid.SHORT)
-				navigation.goBack()
+				ToastAndroid.show('Updated successfully', ToastAndroid.SHORT)
+				setImage({})
+				setModalVis(false)
+				handleRefresh()
 			}
 		} catch (error) {
 			setLoading(false)
 			console.log(error)
 		}
 	}
+
+	const handleImagePicker = () => {
+		ImagePicker.openPicker({
+			width: 300,
+			height: 300,
+			cropping: true,
+		})
+			.then((image) => {
+				setImage(image)
+			})
+			.catch(() => {
+				console.log('Cancelled')
+			})
+	}
+
 	return (
-		<View style={styles.container}>
-			<Header title="Add Category" />
+		<Modal
+			animationType="slide"
+			visible={modalVis}
+			onRequestClose={() => {
+				setModalVis(false)
+			}}>
+			<Header title="Edit Sub Category" />
+
 			<ScrollView style={{ padding: 20 }}>
 				<OutlinedTextField
 					label="Category Name"
 					containerStyle={styles.input}
 					onChangeText={setName}
+					defaultValue={info.type_name}
 				/>
-				{image == '' ? (
-					<Image
-						style={styles.imageStyle}
-						source={require('../assets/sample.png')}
-					/>
-				) : (
+				{image.path ? (
 					<Image style={styles.imageStyle} source={{ uri: image.path }} />
+				) : (
+					<Image style={styles.imageStyle} source={{ uri: info.type_image }} />
 				)}
 
 				<Button
 					// contentStyle={{ alignSelf: 'flex-start' }}
 					icon="camera"
 					mode="outlined"
-					onPress={() => {
-						ImagePicker.openPicker({
-							width: 300,
-							height: 300,
-							cropping: true,
-						})
-							.then((image) => {
-								console.log(image)
-								setImage(image)
-							})
-							.catch(() => {
-								console.log('Cancelled')
-							})
-					}}>
+					onPress={handleImagePicker}>
 					Upload Image
 				</Button>
 				<Button
@@ -100,15 +101,15 @@ const AddCategory = ({ navigation }) => {
 					color="#222022"
 					mode="contained"
 					loading={loading}
-					onPress={handleAdd}>
-					Add Now
+					onPress={handleEdit}>
+					Save
 				</Button>
 			</ScrollView>
-		</View>
+		</Modal>
 	)
 }
 
-export default AddCategory
+export default EditModal
 
 const styles = StyleSheet.create({
 	container: {
@@ -121,8 +122,8 @@ const styles = StyleSheet.create({
 		marginTop: 20,
 	},
 	imageStyle: {
-		width: 100,
-		height: 100,
+		width: 150,
+		height: 150,
 		resizeMode: 'contain',
 		alignSelf: 'center',
 		marginVertical: 20,

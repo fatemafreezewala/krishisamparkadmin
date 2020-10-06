@@ -4,7 +4,7 @@ import {
 	View,
 	ScrollView,
 	StyleSheet,
-	TouchableOpacity,
+	RefreshControl,
 	ActivityIndicator,
 	Pressable,
 	Alert,
@@ -13,11 +13,15 @@ import {
 import Header from '../components/Header'
 import MCI from 'react-native-vector-icons/MaterialCommunityIcons'
 import url from '../constant/url'
+import EditModal from '../components/EditType'
 
 const ViewCategory = ({ route, navigation }) => {
 	const { name, id } = route.params
 	const [loading, setLoading] = useState(false)
 	const [types, setTypes] = useState([])
+	const [modalVis, setModalVis] = useState(false)
+	const [editInfo, setEditInfo] = useState({})
+	const [refreshing, setRefreshing] = useState(false)
 
 	useEffect(() => {
 		getType()
@@ -81,11 +85,14 @@ const ViewCategory = ({ route, navigation }) => {
 	return (
 		<View style={styles.container}>
 			<Header title={name} />
-			<ScrollView>
+			<ScrollView
+				refreshControl={
+					<RefreshControl onRefresh={getType} refreshing={refreshing} />
+				}>
 				<View style={styles.listWrap}>
 					{loading && <ActivityIndicator size="large" color="#000" />}
 					{types.length == 0 && !loading && (
-						<Text style={styles.errText}>No types Added</Text>
+						<Text style={styles.errText}>No types added</Text>
 					)}
 					{types.map((item, i) => {
 						return (
@@ -106,17 +113,30 @@ const ViewCategory = ({ route, navigation }) => {
 											color="#e17055"
 										/>
 									</Pressable>
-									<MCI
-										style={styles.icon}
-										name="square-edit-outline"
-										size={25}
-										color="#636e72"
-									/>
+									<Pressable
+										android_ripple={{ color: 'gray' }}
+										onPress={() => {
+											setEditInfo(item)
+											setModalVis(true)
+										}}>
+										<MCI
+											style={styles.icon}
+											name="square-edit-outline"
+											size={25}
+											color="#636e72"
+										/>
+									</Pressable>
 								</View>
 							</View>
 						)
 					})}
 				</View>
+				<EditModal
+					info={editInfo}
+					modalVis={modalVis}
+					setModalVis={setModalVis}
+					handleRefresh={getType}
+				/>
 			</ScrollView>
 		</View>
 	)

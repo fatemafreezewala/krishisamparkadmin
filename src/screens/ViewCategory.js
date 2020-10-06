@@ -8,15 +8,20 @@ import {
 	Alert,
 	ActivityIndicator,
 	ToastAndroid,
+	RefreshControl,
 } from 'react-native'
 import Header from '../components/Header'
 import AppContext from '../context/AppContext'
 import MCI from 'react-native-vector-icons/MaterialCommunityIcons'
 import url from '../constant/url'
+import EditModal from '../components/EditCategory'
 
 const ViewCategory = ({ navigation }) => {
 	const { category, setCategory } = useContext(AppContext)
 	const [loading, setLoading] = useState(false)
+	const [modalVis, setModalVis] = useState(false)
+	const [editInfo, setEditInfo] = useState({})
+	const [refreshing, setRefreshing] = useState(false)
 
 	const deleteAlert = (id) => {
 		Alert.alert(
@@ -70,10 +75,18 @@ const ViewCategory = ({ navigation }) => {
 		}
 	}
 
+	const handleRefresh = async () => {
+		let res = await fetchCategory()
+		setCategory(res)
+	}
+
 	return (
 		<View style={styles.container}>
 			<Header title="Categories" />
-			<ScrollView>
+			<ScrollView
+				refreshControl={
+					<RefreshControl onRefresh={handleRefresh} refreshing={refreshing} />
+				}>
 				<View style={styles.listWrap}>
 					{loading && <ActivityIndicator size="large" color="#000" />}
 					{category.map((item, i) => {
@@ -103,17 +116,30 @@ const ViewCategory = ({ navigation }) => {
 											color="#e17055"
 										/>
 									</Pressable>
-									<MCI
-										style={styles.icon}
-										name="square-edit-outline"
-										size={25}
-										color="#636e72"
-									/>
+									<Pressable
+										android_ripple={{ color: 'gray' }}
+										onPress={() => {
+											setEditInfo(item)
+											setModalVis(true)
+										}}>
+										<MCI
+											style={styles.icon}
+											name="square-edit-outline"
+											size={25}
+											color="#636e72"
+										/>
+									</Pressable>
 								</View>
 							</View>
 						)
 					})}
 				</View>
+				<EditModal
+					info={editInfo}
+					modalVis={modalVis}
+					setModalVis={setModalVis}
+					handleRefresh={handleRefresh}
+				/>
 			</ScrollView>
 		</View>
 	)

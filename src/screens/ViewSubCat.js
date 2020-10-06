@@ -8,15 +8,20 @@ import {
 	Pressable,
 	Alert,
 	ToastAndroid,
+	RefreshControl,
 } from 'react-native'
 import Header from '../components/Header'
 import MCI from 'react-native-vector-icons/MaterialCommunityIcons'
 import url from '../constant/url'
+import EditModal from '../components/EditSubCategory'
 
 const ViewCategory = ({ route, navigation }) => {
 	const { name, category_id } = route.params
 	const [loading, setLoading] = useState(false)
 	const [subCat, setSubCat] = useState([])
+	const [modalVis, setModalVis] = useState(false)
+	const [editInfo, setEditInfo] = useState({})
+	const [refreshing, setRefreshing] = useState(false)
 
 	useEffect(() => {
 		getSubCategoryType()
@@ -82,7 +87,13 @@ const ViewCategory = ({ route, navigation }) => {
 	return (
 		<View style={styles.container}>
 			<Header title={name} />
-			<ScrollView>
+			<ScrollView
+				refreshControl={
+					<RefreshControl
+						onRefresh={getSubCategoryType}
+						refreshing={refreshing}
+					/>
+				}>
 				<View style={styles.listWrap}>
 					{loading && <ActivityIndicator size="large" color="#000" />}
 					{subCat.length == 0 && !loading && (
@@ -115,17 +126,30 @@ const ViewCategory = ({ route, navigation }) => {
 											color="#e17055"
 										/>
 									</Pressable>
-									<MCI
-										style={styles.icon}
-										name="square-edit-outline"
-										size={25}
-										color="#636e72"
-									/>
+									<Pressable
+										android_ripple={{ color: 'gray' }}
+										onPress={() => {
+											setEditInfo(item)
+											setModalVis(true)
+										}}>
+										<MCI
+											style={styles.icon}
+											name="square-edit-outline"
+											size={25}
+											color="#636e72"
+										/>
+									</Pressable>
 								</View>
 							</View>
 						)
 					})}
 				</View>
+				<EditModal
+					info={editInfo}
+					modalVis={modalVis}
+					setModalVis={setModalVis}
+					handleRefresh={getSubCategoryType}
+				/>
 			</ScrollView>
 		</View>
 	)

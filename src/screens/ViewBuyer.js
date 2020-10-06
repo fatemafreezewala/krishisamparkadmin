@@ -1,14 +1,20 @@
-import React from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import React from 'react'
+import { StyleSheet, Text, View } from 'react-native'
+import Header from '../components/Header'
 
 const ViewBuyer = () => {
-  return (
-    <View>
-      <Text></Text>
-    </View>
-  );
-};
+	return (
+		<View style={styles.container}>
+			<Header title="Buyers" />
+		</View>
+	)
+}
 
-export default ViewBuyer;
+export default ViewBuyer
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+	container: {
+		flex: 1,
+		backgroundColor: '#fff',
+	},
+})
