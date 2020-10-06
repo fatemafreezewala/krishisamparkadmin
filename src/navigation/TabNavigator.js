@@ -5,7 +5,6 @@ import Home from '../screens/Home'
 import ViewBuyer from '../screens/ViewBuyer'
 import ViewSeller from '../screens/ViewSeller'
 import ViewCategory from '../screens/ViewCategory'
-import Ionicons from 'react-native-vector-icons/FontAwesome5'
 import MCI from 'react-native-vector-icons/MaterialCommunityIcons'
 const Tabs = createBottomTabNavigator()
 
@@ -16,30 +15,25 @@ const TabNavigator = () => {
 			screenOptions={({ route }) => ({
 				tabBarIcon: ({ focused, color, size }) => {
 					let iconName
-
 					if (route.name === 'Home') {
-						iconName = focused
-							? 'file-document-edit-outline'
-							: 'file-document-edit-outline'
-					} else if (route.name === 'ViewCategory') {
-						iconName = focused ? 'eye-outline' : 'eye-outline'
-					} else if (route.name === 'ViewBuyer') {
-						iconName = focused
-							? 'clipboard-arrow-up-outline'
-							: 'clipboard-arrow-up-outline'
+						iconName = 'home-outline'
+					} else if (route.name === 'Category') {
+						iconName = 'format-list-checkbox'
+					} else if (route.name === 'Buyer') {
+						iconName = 'account-arrow-left-outline'
 					} else {
-						iconName = focused
-							? 'clipboard-arrow-down-outline'
-							: 'clipboard-arrow-down-outline'
+						iconName = 'account-arrow-right-outline'
 					}
-
-					// You can return any component that you like here!
 					return <MCI name={iconName} size={30} color={color} />
 				},
 			})}
 			tabBarOptions={{
 				activeTintColor: '#6ead3a',
-				inactiveTintColor: '#222022',
+				inactiveTintColor: 'gray',
+				tabStyle: {
+					marginBottom: 3,
+					marginTop: 2,
+				},
 			}}>
 			<Tabs.Screen name="Home" component={Home} />
 			<Tabs.Screen name="Category" component={ViewCategory} />

@@ -1,100 +1,112 @@
-import React, { useContext, useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
 	Text,
 	View,
 	ScrollView,
 	StyleSheet,
+	ActivityIndicator,
 	Pressable,
 	Alert,
-	ActivityIndicator,
 	ToastAndroid,
 } from 'react-native'
 import Header from '../components/Header'
-import AppContext from '../context/AppContext'
 import MCI from 'react-native-vector-icons/MaterialCommunityIcons'
 import url from '../constant/url'
 
-const ViewCategory = ({ navigation }) => {
-	const { category, setCategory } = useContext(AppContext)
+const ViewCategory = ({ route, navigation }) => {
+	const { name, category_id } = route.params
 	const [loading, setLoading] = useState(false)
+	const [subCat, setSubCat] = useState([])
+
+	useEffect(() => {
+		getSubCategoryType()
+	}, [])
+
+	const getSubCategoryType = async (id) => {
+		setLoading(true)
+		try {
+			const res = await fetch(`${url}getSubCategoryType`, {
+				method: 'POST',
+				body: JSON.stringify({
+					subcategory_id: category_id,
+				}),
+			})
+			const json = await res.json()
+			setLoading(false)
+			if (json.status == '200') {
+				setSubCat(json.data)
+			} else {
+				setSubCat([])
+			}
+		} catch (error) {
+			setLoading(false)
+			console.log(error)
+		}
+	}
 
 	const deleteAlert = (id) => {
 		Alert.alert(
 			'Delete Confirmation',
 			'Do you want to delete this category?',
-			[{ text: 'Cancel' }, { text: 'Yes', onPress: () => deleteCategory(id) }],
+			[
+				{ text: 'Cancel' },
+				{ text: 'Yes', onPress: () => deleteSubCategory(id) },
+			],
 			{ cancelable: true },
 		)
 	}
 
-	const deleteCategory = async (id) => {
+	const deleteSubCategory = async (id) => {
 		setLoading(true)
 		try {
 			const res = await fetch(`${url}deleteRecord`, {
 				method: 'POST',
 				body: JSON.stringify({
 					id: id,
-					column: 'subcat_id',
-					table: 'subcategories_tbl',
+					column: 'type_id',
+					table: 'subcategoriestype_tbl',
 				}),
 			})
 			const json = await res.json()
-			if (json.status == '200') {
-				let res = await fetchCategory()
-				setCategory(res)
-			}
-			ToastAndroid.show('Category deleted', ToastAndroid.SHORT)
 			setLoading(false)
+			if (json.status == '200') {
+				await getSubCategoryType()
+			}
+			ToastAndroid.show('Sub Category deleted', ToastAndroid.SHORT)
 		} catch (error) {
 			setLoading(false)
-			console.log(error)
-		}
-	}
-
-	const fetchCategory = async () => {
-		try {
-			const res = await fetch(`${url}getSubCategory`, {
-				method: 'POST',
-				body: JSON.stringify({
-					category_id: '1',
-				}),
-			})
-			const json = await res.json()
-			if (json.status == '200') {
-				return json.data
-			} else {
-				return []
-			}
-		} catch (error) {
 			console.log(error)
 		}
 	}
 
 	return (
 		<View style={styles.container}>
-			<Header title="Categories" />
+			<Header title={name} />
 			<ScrollView>
 				<View style={styles.listWrap}>
 					{loading && <ActivityIndicator size="large" color="#000" />}
-					{category.map((item, i) => {
+					{subCat.length == 0 && !loading && (
+						<Text style={styles.errText}>No Sub Category Added</Text>
+					)}
+					{subCat.map((item, i) => {
 						return (
 							<View style={styles.itemWrap} key={i}>
 								<Pressable
 									android_ripple={{ color: 'gray' }}
 									style={styles.item}
 									onPress={() =>
-										navigation.navigate('ViewSubCat', {
-											name: item.subcat_name,
-											category_id: item.subcat_id,
+										navigation.navigate('ViewTypes', {
+											name: item.type_name,
+											id: item.type_id,
 										})
 									}>
-									<Text style={styles.name}>{item.subcat_name}</Text>
+									<Text style={styles.name}>{item.type_name}</Text>
 								</Pressable>
 								<View style={styles.icons}>
 									<Pressable
 										android_ripple={{ color: 'gray' }}
 										onPress={() => {
-											deleteAlert(item.subcat_id)
+											deleteAlert(item.type_id)
 										}}>
 										<MCI
 											style={styles.icon}
@@ -147,6 +159,10 @@ const styles = StyleSheet.create({
 	},
 	name: {
 		fontSize: 18,
+	},
+	errText: {
+		color: 'gray',
+		textAlign: 'center',
 	},
 })
 export default ViewCategory
