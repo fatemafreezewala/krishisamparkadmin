@@ -74,7 +74,7 @@ const EditModal = ({ info, modalVis, setModalVis, handleRefresh }) => {
 			onRequestClose={() => {
 				setModalVis(false)
 			}}>
-			<Header title="Edit Type" />
+			<Header title="Edit Type" noBack={true} />
 
 			<ScrollView style={{ padding: 20 }}>
 				<OutlinedTextField
