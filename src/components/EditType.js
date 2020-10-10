@@ -14,6 +14,7 @@ import url from '../constant/url'
 
 const EditModal = ({ info, modalVis, setModalVis, handleRefresh }) => {
 	const [name, setName] = useState(info.type_sub_name)
+	const [desc, setDesc] = useState(info.type_sub_desp)
 	const [image, setImage] = useState({})
 	const [loading, setLoading] = useState(false)
 
@@ -21,6 +22,7 @@ const EditModal = ({ info, modalVis, setModalVis, handleRefresh }) => {
 		setLoading(true)
 		const formData = new FormData()
 		formData.append('type_sub_name', name)
+		formData.append('type_sub_desp', name)
 		formData.append('type_sub_id', info.type_sub_id)
 		if (image.path) {
 			formData.append('type_sub_image', {
@@ -78,10 +80,16 @@ const EditModal = ({ info, modalVis, setModalVis, handleRefresh }) => {
 
 			<ScrollView style={{ padding: 20 }}>
 				<OutlinedTextField
-					label="Category Name"
+					label="Type"
 					containerStyle={styles.input}
 					onChangeText={setName}
 					defaultValue={info.type_sub_name}
+				/>
+				<OutlinedTextField
+					label="Description"
+					containerStyle={styles.input}
+					onChangeText={setDesc}
+					defaultValue={info.type_sub_desp}
 				/>
 				{image.path ? (
 					<Image style={styles.imageStyle} source={{ uri: image.path }} />

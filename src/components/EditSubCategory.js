@@ -78,7 +78,7 @@ const EditModal = ({ info, modalVis, setModalVis, handleRefresh }) => {
 
 			<ScrollView style={{ padding: 20 }}>
 				<OutlinedTextField
-					label="Category Name"
+					label="Sub Category Name"
 					containerStyle={styles.input}
 					onChangeText={setName}
 					defaultValue={info.type_name}

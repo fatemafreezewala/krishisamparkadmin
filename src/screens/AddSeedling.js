@@ -18,6 +18,7 @@ import Header from '../components/Header'
 const AddSeedling = ({ navigation }) => {
 	const { category } = useContext(AppContext)
 	const [text, setText] = useState('')
+	const [desc, setDesc] = useState('')
 	const [image, setImage] = useState('')
 	const [catId, setCatId] = useState('')
 	const [subCat, setSubCat] = useState([])
@@ -34,6 +35,7 @@ const AddSeedling = ({ navigation }) => {
 		const formData = new FormData()
 		formData.append('type_sub_name', text)
 		formData.append('type_sub_parent_id', selectedSubCat)
+		formData.append('type_sub_desp', desc)
 		formData.append('type_sub_image', {
 			uri: image.path,
 			type: image.mime,
@@ -84,89 +86,97 @@ const AddSeedling = ({ navigation }) => {
 	return (
 		<View style={styles.container}>
 			<Header title="Add Type" />
-			<ScrollView style={{ padding: 20 }}>
-				<View style={styles.pickerWrapper}>
-					<Picker
-						mode="dropdown"
-						selectedValue={catId}
-						onValueChange={(itemValue) => {
-							getSubCategoryType(itemValue)
-						}}>
-						<Picker.Item label="Select Category" value="" />
-						{category.map((item, i) => {
-							return (
-								<Picker.Item
-									key={i}
-									label={item.subcat_name}
-									value={item.subcat_id}
-								/>
-							)
-						})}
-					</Picker>
-				</View>
-				{subCat.length !== 0 && (
+			<ScrollView>
+				<View style={{ margin: 20 }}>
 					<View style={styles.pickerWrapper}>
 						<Picker
 							mode="dropdown"
-							selectedValue={selectedSubCat}
+							selectedValue={catId}
 							onValueChange={(itemValue) => {
-								setSelectedSubCat(itemValue)
+								getSubCategoryType(itemValue)
 							}}>
-							<Picker.Item label="Select Sub-Category" value="" />
-							{subCat.map((item, i) => {
+							<Picker.Item label="Select Category" value="" />
+							{category.map((item, i) => {
 								return (
 									<Picker.Item
 										key={i}
-										label={item.type_name}
-										value={item.type_id}
+										label={item.subcat_name}
+										value={item.subcat_id}
 									/>
 								)
 							})}
 						</Picker>
 					</View>
-				)}
+					{subCat.length !== 0 && (
+						<View style={styles.pickerWrapper}>
+							<Picker
+								mode="dropdown"
+								selectedValue={selectedSubCat}
+								onValueChange={(itemValue) => {
+									setSelectedSubCat(itemValue)
+								}}>
+								<Picker.Item label="Select Sub-Category" value="" />
+								{subCat.map((item, i) => {
+									return (
+										<Picker.Item
+											key={i}
+											label={item.type_name}
+											value={item.type_id}
+										/>
+									)
+								})}
+							</Picker>
+						</View>
+					)}
 
-				<OutlinedTextField
-					label="Name"
-					containerStyle={styles.input}
-					onChangeText={setText}
-				/>
-				{image == '' ? (
-					<Image
-						style={styles.imageStyle}
-						source={require('../assets/sample.png')}
+					<OutlinedTextField
+						label="Name"
+						containerStyle={styles.input}
+						onChangeText={setText}
 					/>
-				) : (
-					<Image style={styles.imageStyle} source={{ uri: image.path }} />
-				)}
 
-				<Button
-					color="#6ead3a"
-					icon="camera"
-					mode="outlined"
-					onPress={() => {
-						ImagePicker.openPicker({
-							width: 300,
-							height: 300,
-							cropping: true,
-						})
-							.then((image) => {
-								setImage(image)
+					<OutlinedTextField
+						label="Description"
+						containerStyle={styles.input}
+						onChangeText={setDesc}
+					/>
+					{image == '' ? (
+						<Image
+							style={styles.imageStyle}
+							source={require('../assets/sample.png')}
+						/>
+					) : (
+						<Image style={styles.imageStyle} source={{ uri: image.path }} />
+					)}
+
+					<Button
+						color="#6ead3a"
+						icon="camera"
+						mode="outlined"
+						onPress={() => {
+							ImagePicker.openPicker({
+								width: 300,
+								height: 300,
+								cropping: true,
 							})
-							.catch((error) => {
-								console.log(error)
-							})
-					}}>
-					Upload Image
-				</Button>
-				<Button
-					style={{ marginTop: '10%' }}
-					color="#222022"
-					mode="contained"
-					loading={loading}
-					onPress={handleAddSubCat}>
-					Add Now
-				</Button>
+								.then((image) => {
+									setImage(image)
+								})
+								.catch((error) => {
+									console.log(error)
+								})
+						}}>
+						Upload Image
+					</Button>
+					<Button
+						style={{ marginTop: '10%' }}
+						color="#222022"
+						mode="contained"
+						loading={loading}
+						onPress={handleAddSubCat}>
+						Add Now
+					</Button>
+				</View>
 			</ScrollView>
 		</View>
 	)
@@ -177,8 +187,9 @@ export default AddSeedling
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		flexDirection: 'column',
+		// flexDirection: 'column',
 		backgroundColor: '#fff',
+		// padding: 20,
 	},
 	input: {
 		marginTop: 20,
