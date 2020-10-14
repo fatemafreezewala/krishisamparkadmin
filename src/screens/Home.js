@@ -41,13 +41,13 @@ const Home = ({ navigation }) => {
 	const DATA = [
 		{
 			id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
-			name: 'playlist-edit',
+			name: 'view-grid-outline',
 			title: 'Main Category',
 			onpress: 'AddCategory',
 		},
 		{
 			id: 'bd7acbea-c1b1-46c-aed5-3ad53abb28ba',
-			name: 'playlist-plus',
+			name: 'view-grid-plus-outline',
 			title: 'Sub Category',
 			onpress: 'AddSubCategory',
 		},
@@ -59,9 +59,15 @@ const Home = ({ navigation }) => {
 		},
 		{
 			id: 'bd7acba-c1b1-46c-aed5-3ad53ab28ba',
-			name: 'bell',
+			name: 'bell-outline',
 			title: 'Notification',
 			onpress: 'AddNotification',
+		},
+		{
+			id: 'bd7acba-c1b1-46c-aed5-3ad53ab28ba',
+			name: 'inbox-arrow-down',
+			title: 'Contribution',
+			onpress: 'Contribution',
 		},
 	]
 	const renderItem = ({ item }) => (
@@ -73,7 +79,7 @@ const Home = ({ navigation }) => {
 	)
 	const Item = ({ title, icon, onPress }) => (
 		<TouchableOpacity style={styles.item} onPress={onPress}>
-			<Icon color="#6ead3a" name={title} size={70}></Icon>
+			<Icon color="#6ead3a" name={title} size={60}></Icon>
 			<Text style={styles.sub}>{icon}</Text>
 		</TouchableOpacity>
 	)
@@ -98,10 +104,10 @@ const styles = StyleSheet.create({
 	},
 	item: {
 		height: 160,
-		width: '70%',
+		// width: '100%',
 		justifyContent: 'center',
 		alignItems: 'center',
-		alignSelf: 'center',
+		// alignSelf: 'center',
 		marginHorizontal: 15,
 		marginVertical: 20,
 		elevation: 2,

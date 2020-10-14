@@ -12,6 +12,7 @@ import AddSeedling from '../screens/AddSeedling'
 import AddNotification from '../screens/AddNotification'
 import ViewSubCat from '../screens/ViewSubCat'
 import ViewTypes from '../screens/ViewTypes'
+import Contribution from '../screens/Contribution'
 
 const Stack = createStackNavigator()
 
@@ -30,6 +31,7 @@ const AppNavigator = () => {
 				<Stack.Screen name="AddCategory" component={AddCategory} />
 				<Stack.Screen name="ViewSubCat" component={ViewSubCat} />
 				<Stack.Screen name="ViewTypes" component={ViewTypes} />
+				<Stack.Screen name="Contribution" component={Contribution} />
 			</Stack.Navigator>
 		</NavigationContainer>
 	)
